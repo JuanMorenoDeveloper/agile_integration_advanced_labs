@@ -9,13 +9,10 @@ import org.apache.camel.builder.RouteBuilder;
 import org.apache.camel.dataformat.bindy.csv.BindyCsvDataFormat;
 import org.apache.camel.model.dataformat.JsonLibrary;
 
-public class FromCSVFileToBindyDataFormat extends RouteBuilder {
+public class FromCsvToJsonRoute extends RouteBuilder {
 
   @EndpointInject(ref = "inputFile")
   Endpoint sourceUri;
-
-  // @EndpointInject(ref = "outputFile")
-  // Endpoint outputUri;
 
   @EndpointInject(ref = "errorFile")
   Endpoint errorUri;
@@ -29,21 +26,21 @@ public class FromCSVFileToBindyDataFormat extends RouteBuilder {
       .log(INFO, "%% marshal-exception handled.").to(errorUri);
     //Data format handler
     BindyCsvDataFormat df = new BindyCsvDataFormat(Customer.class);
-    //From CSV to Object
+    //From CSV to Customer
     from(sourceUri).routeId("dataformat")
       .convertBodyTo(String.class)
       .log(">> Reading ${file:onlyname} : ${body}")
       .split(bodyAs(String.class).tokenize("\n"))
+      .log(">> Processing line : ${body}")
       .unmarshal(df)
-      .log("Conversion : ${body}")
+      .log(">> Parsing line to Customer : ${body}")
       .to("direct:csv2json");
-    //From Object to Json
+    //From Customer to Json
     from("direct:csv2json")
-    .log("json-transformation")
-    .to("dozer:csv2json?mappingFile=transformation.xml&targetModel=org.globex.Account")
-    .log("After transformation ${body}")
-    .marshal().json(JsonLibrary.Jackson)
-    .to("file://src/data/outbox?fileName=account-${property.CamelSplitIndex}.json");
+      .to("dozer:csv2json?mappingFile=transformation.xml&targetModel=org.globex.Account")
+      .log(">> Transformation Customer to Account ${body}")
+      .marshal().json(JsonLibrary.Jackson)
+      .to("file://src/data/outbox?fileName=account-${property.CamelSplitIndex}.json");
     //@formatter:on
   }
 
