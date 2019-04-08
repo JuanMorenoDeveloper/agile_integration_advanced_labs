@@ -21,10 +21,10 @@
 		</packageScan>
 		<endpoint id="inputFile"
 			uri="file://src/data/inbox?fileName=customers.csv&amp;noop=true" />
-<!-- 		<endpoint id="outputFile" -->
-<!-- 			uri="file://src/data/outbox?fileName=account-${property.CamelSplitIndex}.json" /> -->
-		<endpoint id="errorFile"
-			uri="file://src/data/error?fileName=csv-record-${date:now:yyyyMMdd}.txt" />
+		<!-- <endpoint id="outputFile" -->
+		<!-- uri="file://src/data/outbox?fileName=account-${property.CamelSplitIndex}.json" 
+			/> -->
+		<!-- <endpoint id="errorFile" uri="file://src/data/error?fileName=csv-record-${date:now:yyyyMMdd}.txt"/> -->
 		<!-- Transformation Endpoint doing csv2java conversion Step 1 : csv record 
 			is converted java using camel bindy Step 2 : Dozer transformation of Customer 
 			to Account Step 3 : Java to Json conversion using json jackson -->

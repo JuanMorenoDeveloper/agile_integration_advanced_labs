@@ -14,16 +14,13 @@ public class FromCsvToJsonRoute extends RouteBuilder {
   @EndpointInject(ref = "inputFile")
   Endpoint sourceUri;
 
-  @EndpointInject(ref = "errorFile")
-  Endpoint errorUri;
-
   @Override
   public void configure() throws Exception {
     //@formatter:off
     //Marshal exception handling
     onException(IllegalArgumentException.class).routeId("unmarshal-exception")
       .maximumRedeliveries(0).handled(true)
-      .log(INFO, "%% marshal-exception handled.").to(errorUri);
+      .log(INFO, "%% marshal-exception handled.").to("file://src/data/error?fileName=csv-record-${date:now:yyyyMMdd}.txt");
     //Data format handler
     BindyCsvDataFormat df = new BindyCsvDataFormat(Customer.class);
     //From CSV to Customer
