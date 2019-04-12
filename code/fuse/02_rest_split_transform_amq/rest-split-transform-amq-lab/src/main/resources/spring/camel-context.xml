@@ -5,5 +5,49 @@
     <!-- Define a traditional camel context here -->
     <camelContext id="camel" xmlns="http://camel.apache.org/schema/spring">
         <propertyPlaceholder id="properties" location="route.properties"/>
+        <!-- EXCLUDE-BEGIN -->
+        <endpoint id="csv2json" uri="dozer:csv2json2?sourceModel=org.acme.Customer&amp;targetModel=org.globex.Account&amp;marshalId=json&amp;unmarshalId=csv&amp;mappingFile=transformation.xml"/>
+        <!-- CSV Input & JSon OutPut DataFormat -->
+        <dataFormats>
+            <bindy classType="org.acme.Customer" id="csv" type="Csv"/>
+            <json id="json" library="Jackson"/>
+        </dataFormats>
+        <restConfiguration bindingMode="off" component="servlet" contextPath="/rest"/>
+        <rest apiDocs="true"
+            id="rest-130579d7-1c1b-409c-a496-32d6feb03006" path="/service">
+            <post id="32d64e54-9ae4-42d3-b175-9cfd81733379" uri="/customers">
+                <to uri="direct:inbox"/>
+            </post>
+        </rest>
+        <!--
+             Transformation Endpoint doing csv2java conversion
+             Step 1 : csv record is converted java using camel bindy
+             Step 2 : Dozer transformation of Customer to Account
+             Step 3 : Java to Json conversion using json jackson
+        -->
+        <route id="_route1" streamCache="true">
+            <!-- Consume files from input directory -->
+            <from id="_from1" uri="direct:inbox"/>
+            <onException id="_onException1">
+                <exception>java.lang.IllegalArgumentException</exception>
+                <handled>
+                    <constant>true</constant>
+                </handled>
+                <log id="_log1" message=">> Exception : ${body}"/>
+                <setExchangePattern id="_setExchangePattern1" pattern="InOnly"/>
+                <to id="_to1" uri="amqp:queue:errorQueue"/>
+            </onException>
+            <split id="_split1">
+                <tokenize token=";"/>
+                <to id="_to2" ref="csv2json"/>
+                <setExchangePattern id="_setExchangePattern2" pattern="InOnly"/>
+                <to id="_to3" uri="amqp:queue:accountQueue"/>
+                <log id="_log2" message=">> Completed JSON: ${body}"/>
+            </split>
+            <transform id="_transform1">
+                <constant>Processed the customer data</constant>
+            </transform>
+        </route>
+        <!-- EXCLUDE-END -->
     </camelContext>
 </beans>

@@ -9,24 +9,20 @@
 	the specific language governing permissions and limitations under the License. -->
 <!-- Configures the Camel Context -->
 <beans xmlns="http://www.springframework.org/schema/beans"
-	xmlns:util="http://www.springframework.org/schema/util"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd http://camel.apache.org/schema/spring http://camel.apache.org/schema/spring/camel-spring.xsd ">
-	<camelContext id="_camelContext1"
-		xmlns="http://camel.apache.org/schema/spring">
-		<propertyPlaceholder id="properties"
-			location="fabric8/route.properties" />
-		<packageScan>
-			<package>com.redhat.training.gpte</package>
-		</packageScan>
-		<endpoint id="inputFile"
-			uri="file://src/data/inbox?fileName=customers.csv&amp;noop=true" />
-		<!-- <endpoint id="outputFile" -->
-		<!-- uri="file://src/data/outbox?fileName=account-${property.CamelSplitIndex}.json" 
+    xmlns:util="http://www.springframework.org/schema/util"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd http://camel.apache.org/schema/spring http://camel.apache.org/schema/spring/camel-spring.xsd ">
+    <camelContext id="_camelContext1" xmlns="http://camel.apache.org/schema/spring">
+        <propertyPlaceholder id="properties" location="fabric8/route.properties"/>
+        <packageScan>
+            <package>com.redhat.training.gpte</package>
+        </packageScan>
+        <endpoint id="inputFile" uri="file://src/data/inbox?fileName=customers.csv&amp;noop=true&amp;idempotent=true"/>
+        <!-- <endpoint id="outputFile" -->
+        <!-- uri="file://src/data/outbox?fileName=account-${property.CamelSplitIndex}.json" 
 			/> -->
-		<!-- <endpoint id="errorFile" uri="file://src/data/error?fileName=csv-record-${date:now:yyyyMMdd}.txt"/> -->
-		<!-- Transformation Endpoint doing csv2java conversion Step 1 : csv record 
+        <!-- <endpoint id="errorFile" uri="file://src/data/error?fileName=csv-record-${date:now:yyyyMMdd}.txt"/> -->
+        <!-- Transformation Endpoint doing csv2java conversion Step 1 : csv record 
 			is converted java using camel bindy Step 2 : Dozer transformation of Customer 
 			to Account Step 3 : Java to Json conversion using json jackson -->
-	</camelContext>
+    </camelContext>
 </beans>

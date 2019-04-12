@@ -1,0 +1,1 @@
+update usecase.t_error set message = 'Fixed,EU,true,Fred,Quicksand,202 Barney Blvd.,Rock City,MI,19728,313-555-1234', status='FIXED' where id = 1
